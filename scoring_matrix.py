@@ -59,7 +59,11 @@ def cross_correlate(x, y, normalization='no'):
     cc =c/max([b,a]) 
     return cc
 
-       
+#compute the peaks in common between two signals (common)
+#divide the number of common peaks by the number 
+#of total peaks in both signals (common/float(tot))
+#so that the max value is 0.5
+#compute coapex (1 if the max of both signal is in the same fraction)      
 def peak_scores(x, y, peak_exclude = []):
     
     peaks_x = signal.find_peaks_cwt(x, widths=np.array([4,5]))
@@ -97,9 +101,11 @@ def peak_scores(x, y, peak_exclude = []):
         tot = 1
     
     return common, common/float(tot), coapex
-            
-def score_profiles(profile_1, profile_2, peak_exclude=[]):
-    
+
+
+#scoring             
+def score_profiles(profile_1, profile_2, peak_exclude=[]): 
+
     res = []
     start_label = ['EVS','MAE','MSE','MdAE','R2']
     labels = []
@@ -114,7 +120,8 @@ def score_profiles(profile_1, profile_2, peak_exclude=[]):
     y_true = profile_1.astype(float)
     y_pred = profile_2.astype(float)
     if y_true.sum() == 0.0 or y_pred.sum() == 0.0:
-        return labels, np.zeros(len(labels))
+        res = pd.Series(data=np.zeros(len(labels)),index=labels)
+        return res
     
     #labels += [n+'_abs' for  n in start_label]
     res.append( metrics.explained_variance_score(y_true, y_pred) )
@@ -147,8 +154,8 @@ def score_profiles(profile_1, profile_2, peak_exclude=[]):
     res.append( metrics.cohen_kappa_score(y_true, y_pred) )
     res.append( metrics.f1_score(y_true, y_pred,average ='weighted') )
     res.append( metrics.hamming_loss(y_true, y_pred) )
-    res.append( metrics.precision_score(y_true, y_pred,average ='micro') )
-    res.append( metrics.recall_score(y_true, y_pred,average ='micro')  )
+    res.append( metrics.precision_score(y_true, y_pred, average ='weighted') )
+    res.append( metrics.recall_score(y_true, y_pred, average ='weighted')  )
     
     #labels += ['CC_abs','CC_max','CC_average']
     res.append( cross_correlate(profile_1,profile_2,'no') )
@@ -166,6 +173,7 @@ def score_profiles(profile_1, profile_2, peak_exclude=[]):
     res.append(coapex)    
     res = [round(n,3) for n in res]
     res = pd.Series(data=res,index=labels)
+    print 100
     return  res
     
 
@@ -179,8 +187,8 @@ if __name__ == '__main__':
     plt.plot(smooth(profile_2.values))
     #plt.plot(profile_1.values)
     #plt.plot(profile_2.values)    
-    #profile_1 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-    #profile_2 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    profile_1 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    profile_2 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
     print peak_scores(smooth(profile_1),smooth(profile_2),peak_exclude=np.arange(30,53,1))
     score_res = score_profiles(profile_1, profile_2, peak_exclude=np.arange(30,53,1))
     for a,b in zip(score_res.index.values,score_res.values):
