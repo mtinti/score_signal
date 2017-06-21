@@ -187,8 +187,8 @@ if __name__ == '__main__':
     plt.plot(smooth(profile_2.values))
     #plt.plot(profile_1.values)
     #plt.plot(profile_2.values)    
-    profile_1 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-    profile_2 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    #profile_1 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    #profile_2 = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
     print peak_scores(smooth(profile_1),smooth(profile_2),peak_exclude=np.arange(30,53,1))
     score_res = score_profiles(profile_1, profile_2, peak_exclude=np.arange(30,53,1))
     for a,b in zip(score_res.index.values,score_res.values):
